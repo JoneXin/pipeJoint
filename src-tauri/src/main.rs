@@ -2,26 +2,26 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-use pipeJoint::types::ProxyStruct;
+use pipeJoint::{storage::JsonStorage, types::ProxyStruct};
 
 // 获取转发列表
 #[tauri::command]
-fn get_proxy_list() -> Vec<ProxyStruct<'static>> {
-    vec![ProxyStruct {
-        sourceIp: "127.0.0.1",
-        sourcePort: 3398,
-        targetIp: "127.0.0.1",
-        targetPort: 3398,
-        protocol: "TCP",
-        status: "stoping",
-        key: "1",
-    }]
+fn get_proxy_list(state: tauri::State<JsonStorage>) -> Vec<ProxyStruct> {
+    state.get_storage_info()
 }
 
 // 新增转发
 #[tauri::command]
-fn addProxyItem(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
+fn add_proxy_item(
+    state: tauri::State<JsonStorage>,
+    proxy_config: ProxyStruct,
+) -> Result<bool, String> {
+    let res = state.add_proxy_item(proxy_config);
+    if let Ok(_) = res {
+        Ok(true)
+    } else {
+        Err(String::from("新增失败!"))
+    }
 }
 
 // 编辑转发
@@ -43,8 +43,12 @@ fn testConnection(name: &str) -> String {
 }
 
 fn main() {
+    // init config
+    let proxy_conf = JsonStorage::new(String::from("./proxy_list.json"));
+
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![get_proxy_list])
+        .manage(proxy_conf)
+        .invoke_handler(tauri::generate_handler![get_proxy_list, add_proxy_item])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

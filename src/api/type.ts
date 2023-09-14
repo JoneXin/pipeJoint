@@ -1,9 +1,9 @@
 export type ProxyStruct = {
-    sourceIp: string;
-    sourcePort: number;
-    targetIp: string;
-    targetPort: number;
+    source_ip: string;
+    source_port: number;
+    target_ip: string;
+    target_port: number;
     protocol: string;
-    status: string;
-    key: string;
+    status?: string;
+    key?: string;
 };

@@ -6,9 +6,19 @@ import React, {
     useState,
 } from "react";
 import type { InputRef } from "antd";
-import { Button, Form, Input, Popconfirm, Select, Table, Tag } from "antd";
+import {
+    Button,
+    Form,
+    Input,
+    Popconfirm,
+    Select,
+    Spin,
+    Table,
+    Tag,
+    message,
+} from "antd";
 import type { FormInstance } from "antd/es/form";
-import { getProxyList } from "../api/proxy";
+import { editProxy, getProxyList } from "../api/proxy";
 
 const EditableContext = React.createContext<FormInstance<any> | null>(null);
 
@@ -111,7 +121,7 @@ const EditableCell: React.FC<EditableCellProps> = ({
 type EditableTableProps = Parameters<typeof Table>[0];
 
 interface DataType {
-    key: React.Key;
+    key: string;
     sourceIp: string;
     sourcePort: number;
     targetIp: string;
@@ -125,18 +135,53 @@ type ColumnTypes = Exclude<EditableTableProps["columns"], undefined>;
 const ProxyTable: React.FC = () => {
     const [dataSource, setDataSource] = useState<DataType[]>([]);
     const [count, setCount] = useState(0);
+    const [messageApi, contextHolder] = message.useMessage();
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         initProxyList();
     }, []);
 
     const initProxyList = async () => {
-        const proxyList = await getProxyList();
-        console.log(proxyList, "==");
+        try {
+            setLoading(true);
+            const proxyList = await getProxyList();
 
-        if (proxyList?.length) {
-            setDataSource(proxyList);
+            if (proxyList?.length) {
+                setDataSource(
+                    proxyList.map((v) => ({
+                        ...v,
+                        sourceIp: v.source_ip,
+                        targetIp: v.target_ip,
+                        sourcePort: v.source_port,
+                        targetPort: v.target_port,
+                    }))
+                );
+            }
+        } catch (error) {
+            message.error(String(error));
         }
+        setLoading(false);
+    };
+
+    const handleEditProxyConf = async (key: string) => {
+        const config: DataType = dataSource.filter((v) => v.key == key)[0];
+
+        try {
+            setLoading(true);
+            await editProxy({
+                protocol: config.protocol,
+                source_ip: config.sourceIp,
+                source_port: config.sourcePort,
+                target_ip: config.targetIp,
+                target_port: config.targetPort,
+                status: config.status,
+                key: config.key,
+            });
+        } catch (error: any) {
+            messageApi.error(error.toString());
+        }
+        setLoading(false);
     };
 
     const handleDelete = (key: React.Key) => {
@@ -221,7 +266,13 @@ const ProxyTable: React.FC = () => {
             dataIndex: "operation",
             render: (_: any, record: any): JSX.Element | null => (
                 <>
-                    <Button type="primary" size="small">
+                    <Button
+                        type="primary"
+                        size="small"
+                        onClick={() => {
+                            handleEditProxyConf(record.key);
+                        }}
+                    >
                         保存
                     </Button>
                     <Button
@@ -272,7 +323,7 @@ const ProxyTable: React.FC = () => {
 
     const handleAdd = () => {
         const newData: DataType = {
-            key: count,
+            key: String(count),
             sourceIp: "0.0.0.0",
             sourcePort: 0,
             targetIp: "0.0.0.0",
@@ -320,21 +371,24 @@ const ProxyTable: React.FC = () => {
 
     return (
         <div>
-            <Button
-                onClick={handleAdd}
-                type="primary"
-                style={{ marginBottom: 16 }}
-            >
-                新增代理
-            </Button>
-            <Table
-                components={components}
-                rowClassName={() => "editable-row"}
-                bordered
-                dataSource={dataSource}
-                columns={columns as ColumnTypes}
-                pagination={{ pageSize: 5 }}
-            />
+            {contextHolder}
+            <Spin spinning={loading}>
+                <Button
+                    onClick={handleAdd}
+                    type="primary"
+                    style={{ marginBottom: 16 }}
+                >
+                    新增代理
+                </Button>
+                <Table
+                    components={components}
+                    rowClassName={() => "editable-row"}
+                    bordered
+                    dataSource={dataSource}
+                    columns={columns as ColumnTypes}
+                    pagination={{ pageSize: 5 }}
+                />
+            </Spin>
         </div>
     );
 };

@@ -12,7 +12,9 @@ function App() {
                     justifyContent: "center",
                 }}
             >
-                <h1 style={{ fontFamily: "sans-serif" }}>Pipe Joint</h1>
+                <h1 style={{ fontFamily: "sans-serif", color: "green" }}>
+                    Pipe Joint
+                </h1>
                 <img src={logo} alt="" height={150} width={150} />
             </div>
             <ProxyTable></ProxyTable>

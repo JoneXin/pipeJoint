@@ -1,10 +1,12 @@
-#[derive(serde::Serialize)]
-pub struct ProxyStruct<'a> {
-    pub sourceIp: &'a str,
-    pub sourcePort: u32,
-    pub targetIp: &'a str,
-    pub targetPort: u32,
-    pub protocol: &'a str,
-    pub status: &'a str,
-    pub key: &'a str,
+use serde::{Deserialize, Serialize};
+
+#[derive(Serialize, Deserialize)]
+pub struct ProxyStruct {
+    pub source_ip: String,
+    pub source_port: u32,
+    pub target_ip: String,
+    pub target_port: u32,
+    pub protocol: String,
+    pub status: String,
+    pub key: String,
 }

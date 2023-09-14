@@ -14,6 +14,16 @@ export async function greet() {
  * get proxy list
  * @returns
  */
-export async function getProxyList(): Promise<Array<ProxyStruct>> {
+export async function getProxyList(): Promise<Array<Required<ProxyStruct>>> {
     return await invoke("get_proxy_list");
+}
+
+/**
+ * get proxy list
+ * @returns
+ */
+export async function editProxy(proxyConfig: ProxyStruct): Promise<boolean> {
+    console.log(proxyConfig);
+
+    return await invoke("add_proxy_item", { proxyConfig });
 }
