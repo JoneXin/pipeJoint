@@ -22,8 +22,29 @@ export async function getProxyList(): Promise<Array<Required<ProxyStruct>>> {
  * get proxy list
  * @returns
  */
-export async function editProxy(proxyConfig: ProxyStruct): Promise<boolean> {
+export async function buckProxy(proxyConfig: ProxyStruct): Promise<boolean> {
     console.log(proxyConfig);
+    return await invoke("buck_proxy", { proxyConfig });
+}
 
-    return await invoke("add_proxy_item", { proxyConfig });
+/**
+ * 删除
+ * @param key
+ * @returns
+ */
+export async function delProxy(key: string): Promise<boolean> {
+    return await invoke("del_proxy_item", { key });
+}
+
+/**
+ * 设置proxy 代理状态
+ * @param key
+ * @param status
+ * @returns
+ */
+export async function proxyStatus(
+    key: string,
+    status: string
+): Promise<boolean> {
+    return await invoke("set_proxy_status", { key, status });
 }

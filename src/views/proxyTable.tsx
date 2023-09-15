@@ -18,7 +18,7 @@ import {
     message,
 } from "antd";
 import type { FormInstance } from "antd/es/form";
-import { editProxy, getProxyList } from "../api/proxy";
+import { delProxy, buckProxy, getProxyList, proxyStatus } from "../api/proxy";
 
 const EditableContext = React.createContext<FormInstance<any> | null>(null);
 
@@ -134,7 +134,7 @@ type ColumnTypes = Exclude<EditableTableProps["columns"], undefined>;
 
 const ProxyTable: React.FC = () => {
     const [dataSource, setDataSource] = useState<DataType[]>([]);
-    const [count, setCount] = useState(0);
+    // const [count, setCount] = useState(0);
     const [messageApi, contextHolder] = message.useMessage();
     const [loading, setLoading] = useState(false);
 
@@ -149,13 +149,15 @@ const ProxyTable: React.FC = () => {
 
             if (proxyList?.length) {
                 setDataSource(
-                    proxyList.map((v) => ({
-                        ...v,
-                        sourceIp: v.source_ip,
-                        targetIp: v.target_ip,
-                        sourcePort: v.source_port,
-                        targetPort: v.target_port,
-                    }))
+                    proxyList
+                        .map((v) => ({
+                            ...v,
+                            sourceIp: v.source_ip,
+                            targetIp: v.target_ip,
+                            sourcePort: v.source_port,
+                            targetPort: v.target_port,
+                        }))
+                        .sort((a, b) => Number(a.key) - Number(b.key))
                 );
             }
         } catch (error) {
@@ -169,7 +171,7 @@ const ProxyTable: React.FC = () => {
 
         try {
             setLoading(true);
-            await editProxy({
+            await buckProxy({
                 protocol: config.protocol,
                 source_ip: config.sourceIp,
                 source_port: config.sourcePort,
@@ -178,15 +180,39 @@ const ProxyTable: React.FC = () => {
                 status: config.status,
                 key: config.key,
             });
+            message.success("保存成功!");
         } catch (error: any) {
             messageApi.error(error.toString());
         }
         setLoading(false);
     };
 
-    const handleDelete = (key: React.Key) => {
-        const newData = dataSource.filter((item) => item.key !== key);
-        setDataSource(newData);
+    const handleDelete = async (key: string) => {
+        try {
+            setLoading(true);
+            //delProxy
+            await delProxy(key);
+            const newData = dataSource.filter((item) => item.key !== key);
+            setDataSource(newData);
+        } catch (error) {
+            message.error(String(error));
+        }
+        setLoading(false);
+    };
+
+    const setProxyStatus = async (key: string, status: string) => {
+        try {
+            setLoading(true);
+            await proxyStatus(key, status);
+            setDataSource((data) => {
+                let res = [...data];
+                return res.map((v) => (v.key == key ? { ...v, status } : v));
+            });
+            message.success(`操作成功 程序进入${status}状态!`);
+        } catch (error) {
+            message.error(String(error));
+        }
+        setLoading(false);
     };
 
     const defaultColumns: (ColumnTypes[number] & {
@@ -282,6 +308,7 @@ const ProxyTable: React.FC = () => {
                             color: "green",
                         }}
                         size="small"
+                        onClick={() => setProxyStatus(record.key, "starting")}
                     >
                         启用
                     </Button>
@@ -292,6 +319,7 @@ const ProxyTable: React.FC = () => {
                             color: "orange",
                         }}
                         size="small"
+                        onClick={() => setProxyStatus(record.key, "stoping")}
                     >
                         停用
                     </Button>
@@ -322,8 +350,12 @@ const ProxyTable: React.FC = () => {
     ];
 
     const handleAdd = () => {
+        const key = dataSource.length
+            ? Number(dataSource[dataSource.length - 1].key) + 1
+            : 0;
+
         const newData: DataType = {
-            key: String(count),
+            key: String(key),
             sourceIp: "0.0.0.0",
             sourcePort: 0,
             targetIp: "0.0.0.0",
@@ -332,7 +364,6 @@ const ProxyTable: React.FC = () => {
             status: "stoping",
         };
         setDataSource([...dataSource, newData]);
-        setCount(count + 1);
     };
 
     const handleSave = (row: DataType) => {
