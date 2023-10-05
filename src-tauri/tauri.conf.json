@@ -18,6 +18,10 @@
         "open": true
       }
     },
+    "systemTray": {
+      "iconPath": "icons/icon.png",
+      "iconAsTemplate": true
+    },
     "bundle": {
       "active": true,
       "targets": "all",
@@ -35,6 +39,19 @@
         "exceptionDomain": "",
         "signingIdentity": null,
         "entitlements": null
+      },
+      "windows": {
+        "certificateThumbprint": null,
+        "digestAlgorithm": "sha256",
+        "timestampUrl": "",
+        "webviewInstallMode": {
+          "type": "embedBootstrapper"
+        },
+        "wix": {
+          "language": [
+            "zh-CN"
+          ]
+        }
       }
     },
     "security": {

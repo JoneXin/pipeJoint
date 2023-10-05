@@ -1,8 +1,10 @@
 pub mod cmds;
 pub mod conn_manager;
 pub mod storage;
+pub mod tray;
 pub mod types;
 pub mod utils;
+
 use std::{collections::HashMap, error::Error};
 use storage::JsonStorage;
 use tokio::{spawn, task::JoinHandle};
