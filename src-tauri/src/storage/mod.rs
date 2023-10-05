@@ -4,6 +4,7 @@ use serde::de::Error;
 
 use crate::types::ProxyStruct;
 
+#[derive(Debug)]
 pub struct JsonStorage {
     path: String,
 }

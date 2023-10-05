@@ -174,12 +174,13 @@ const ProxyTable: React.FC = () => {
             await buckProxy({
                 protocol: config.protocol,
                 source_ip: config.sourceIp,
-                source_port: config.sourcePort,
+                source_port: Number(config.sourcePort),
                 target_ip: config.targetIp,
-                target_port: config.targetPort,
+                target_port: Number(config.targetPort),
                 status: config.status,
                 key: config.key,
             });
+            await initProxyList();
             message.success("保存成功!");
         } catch (error: any) {
             messageApi.error(error.toString());
@@ -262,9 +263,9 @@ const ProxyTable: React.FC = () => {
                         }}
                         options={[
                             { value: "TCP", label: "TCP" },
-                            { value: "UDP", label: "UDP" },
-                            { value: "HTTP", label: "HTTP" },
-                            { value: "HTTP2", label: "HTTP2" },
+                            { value: "UDP", label: "UDP", disabled: true },
+                            // { value: "HTTP", label: "HTTP" },
+                            // { value: "HTTP2", label: "HTTP2" },
                         ]}
                     />
                 </>

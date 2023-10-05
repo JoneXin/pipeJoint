@@ -18,31 +18,12 @@ pub struct Connection<'a> {
 }
 
 impl<'a> Connection<'a> {
-    pub fn new(p: Protocol, t: Transport, host: &str, port: u32) -> Connection {
+    pub fn new(host: &str, port: u32) -> Connection {
         Connection {
-            protocol: p,
-            transport: t,
+            protocol: Protocol::Default,
+            transport: Transport::Tcp,
             host: host,
             port: port,
         }
-    }
-
-    pub fn display(&self) {
-        let p = match self.protocol {
-            Protocol::Default => "http",
-            Protocol::Http => "http",
-            Protocol::Http2 => "http2",
-        };
-
-        let t = match self.transport {
-            Transport::Default => "tcp",
-            Transport::Tcp => "tcp",
-            Transport::Tls => "tls",
-        };
-
-        println!(
-            "protocol: {}, transport:{}, host: {}, port: {}",
-            p, t, self.host, self.port
-        );
     }
 }

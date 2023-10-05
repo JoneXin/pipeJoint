@@ -1,8 +1,9 @@
-use crate::conn_manager::connector::Connection;
 use std::error::Error;
 
 use crate::conn_manager::handler::handle;
 use tokio::net::TcpListener;
+
+use super::connector::Connection;
 
 pub struct HttpListener<'a> {
     listen_conn: Connection<'a>,
