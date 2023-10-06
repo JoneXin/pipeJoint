@@ -3,9 +3,10 @@ use std::error::Error;
 use tokio::io;
 use tokio::io::AsyncWriteExt;
 use tokio::net::TcpStream;
+use tracing::info;
 
 pub async fn handle(mut inbound: TcpStream, proxy_addr: &str) -> Result<(), Box<dyn Error>> {
-    println!("handle proxy: {}", proxy_addr);
+    info!("handle proxy: {}", proxy_addr);
     let mut outbound = TcpStream::connect(proxy_addr).await?;
 
     let (mut ri, mut wi) = inbound.split();

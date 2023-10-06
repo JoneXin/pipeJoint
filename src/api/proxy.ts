@@ -48,3 +48,13 @@ export async function proxyStatus(
 ): Promise<boolean> {
     return await invoke("set_proxy_status", { key, status });
 }
+
+/**
+ * 设置proxy 代理状态
+ * @param key
+ * @param status
+ * @returns
+ */
+export async function testConnection(key: string): Promise<boolean> {
+    return await invoke("test_connection", { key });
+}

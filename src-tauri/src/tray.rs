@@ -58,7 +58,7 @@ pub fn handler(app: &AppHandle, event: SystemTrayEvent) {
             ..
         } => {
             window.show().unwrap();
-            // println!("system tray received a double click");
+            // info!("system tray received a double click");
         }
         // 根据菜单 id 进行事件匹配
         SystemTrayEvent::MenuItemClick { id, .. } => match id.as_str() {

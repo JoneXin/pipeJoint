@@ -1,4 +1,5 @@
 use tauri::Error;
+use tracing::{debug, error, info, instrument};
 
 use crate::{types::ProxyStruct, ProxyManager};
 use std::{
@@ -64,9 +65,14 @@ pub fn del_proxy_item(state_mux: tauri::State<AppState>, key: String) -> Result<
 }
 
 // 测试连接
+#[instrument]
 #[tauri::command]
-pub fn test_connection(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
+pub fn test_connection(key: &str) -> String {
+    info!("test logs");
+    debug!("test logs");
+    error!("test logs");
+    println!("test logs");
+    format!("Hello, {}! You've been greeted from Rust!", key)
 }
 
 // 设置 proxy 状态

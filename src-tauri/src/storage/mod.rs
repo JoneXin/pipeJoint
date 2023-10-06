@@ -1,8 +1,6 @@
-use std::{fs, io, path::Path};
-
-use serde::de::Error;
-
 use crate::types::ProxyStruct;
+use std::{fs, io, path::Path};
+use tracing::info;
 
 #[derive(Debug)]
 pub struct JsonStorage {
@@ -30,7 +28,7 @@ impl JsonStorage {
      */
     pub fn get_storage_info(&self) -> Vec<ProxyStruct> {
         let proxy_json = fs::read_to_string(self.path.as_str()).unwrap();
-        println!("{}", proxy_json);
+        info!("{}", proxy_json);
 
         let proxy_list: Vec<ProxyStruct> = serde_json::from_str(proxy_json.as_str()).unwrap();
         return proxy_list;

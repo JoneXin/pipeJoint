@@ -18,7 +18,13 @@ import {
     message,
 } from "antd";
 import type { FormInstance } from "antd/es/form";
-import { delProxy, buckProxy, getProxyList, proxyStatus } from "../api/proxy";
+import {
+    delProxy,
+    buckProxy,
+    getProxyList,
+    proxyStatus,
+    testConnection,
+} from "../api/proxy";
 
 const EditableContext = React.createContext<FormInstance<any> | null>(null);
 
@@ -332,6 +338,9 @@ const ProxyTable: React.FC = () => {
                         }}
                         size="small"
                         type="dashed"
+                        onClick={() => {
+                            testConnection(record.key);
+                        }}
                     >
                         测试连接
                     </Button>

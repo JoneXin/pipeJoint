@@ -8,6 +8,7 @@ pub mod utils;
 use std::{collections::HashMap, error::Error};
 use storage::JsonStorage;
 use tokio::{spawn, task::JoinHandle};
+use tracing::info;
 
 use crate::{
     conn_manager::{
@@ -53,7 +54,7 @@ impl ProxyManager {
                 _ => HttpListener::new(l_conn, f_conn),
             };
 
-            println!("{} init success", s_port);
+            info!("{} init success", s_port);
             _ = l.listen().await;
         });
 
@@ -101,9 +102,9 @@ impl ProxyManager {
 
         if let Some(handler) = res {
             handler.abort();
-            println!("已停止 key: {} 对应代理", key);
+            info!("已停止 key: {} 对应代理", key);
         } else {
-            println!("{}", "无此端口对应的代理");
+            info!("{}", "无此端口对应的代理");
         }
     }
 
@@ -115,7 +116,7 @@ impl ProxyManager {
         self.tcp_proxy_map.iter().for_each(|(_, handler)| {
             handler.abort();
         });
-        println!("全部停止");
+        info!("全部停止");
     }
 
     pub fn get_proxy_status(&self, key: String) -> bool {
@@ -124,7 +125,7 @@ impl ProxyManager {
         if let Some(handler) = res {
             !handler.is_finished()
         } else {
-            println!("{}", "无此端口对应的代理");
+            info!("{}", "无此端口对应的代理");
             false
         }
     }

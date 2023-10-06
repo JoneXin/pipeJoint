@@ -3,6 +3,7 @@ use std::error::Error;
 
 use crate::conn_manager::handler::handle;
 use tokio::net::TcpListener;
+use tracing::info;
 
 pub struct HttpListener<'a> {
     listen_conn: Connection<'a>,
@@ -26,8 +27,8 @@ impl<'a> HttpListener<'a> {
 
             tokio::spawn(async move {
                 match handle(inbound, &proxy_addr.clone()).await {
-                    Ok(_) => println!("success"),
-                    Err(e) => println!("error: {}", e),
+                    Ok(_) => info!("success"),
+                    Err(e) => info!("error: {}", e),
                 }
             });
         }
