@@ -1,8 +1,11 @@
 {
   "name": "pipeJoint",
+  "desc": "a tcp/udp forwarding tool",
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "license": "MIT",
+  "author": "Jone Xin",
   "scripts": {
     "dev": "vite",
     "start": "tauri dev",
